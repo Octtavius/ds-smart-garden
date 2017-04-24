@@ -9,6 +9,8 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 // mjDNS
 import javax.jmdns.JmDNS;
@@ -47,9 +49,6 @@ public class SmartGardenApp extends javax.swing.JFrame {
             @Override
             public void serviceAdded(ServiceEvent event) {
                     System.out.println("Service added: " + event.getInfo());
-                    ServiceInfo info = event.getInfo();
-                    sensorList.addElement(info.getName() + " : " + info.getPort());
-                    //sensorList.add(2, "ads");
             }
 
             @Override
@@ -59,11 +58,13 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
             @Override
             public void serviceResolved(ServiceEvent event) {
+                System.out.println("Service resolved: " + event.getInfo());
                 ServiceInfo info = event.getInfo();
                 int port = info.getPort();
                 String path = info.getNiceTextString().split("=")[1];
                 //GetRequest.request("http://localhost:"+port+"/"+path);
-                //sensorList.addElement(info.getName() + " : " + info.getPort());
+                sensorList.addElement(info.getName() + " : " + info.getPort());
+                System.out.println("Service Details: " + info.getHostAddresses()[0] + " " + info.getPort());
             }
     }
     
@@ -234,15 +235,19 @@ public class SmartGardenApp extends javax.swing.JFrame {
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
 
             // Add a service listener
-            jmdns.addServiceListener("_http._tcp.local.", new SampleListener());
+            jmdns.addServiceListener("_nando._tcp.local.", new SampleListener());
             
             System.out.println("Service listener added...");
             
+            // Wait a bit
+            Thread.sleep(2500);
 
         } catch (UnknownHostException e) {
                 System.out.println(e.getMessage());
         } catch (IOException e) {
                 System.out.println(e.getMessage());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(SmartGardenApp.class.getName()).log(Level.SEVERE, null, ex);
         }
         
     }//GEN-LAST:event_jButton1ActionPerformed
