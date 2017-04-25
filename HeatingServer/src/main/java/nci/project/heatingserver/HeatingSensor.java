@@ -16,6 +16,14 @@ import	javax.ws.rs.core.Response;
  */
 @Path("/heating")
 public class HeatingSensor {
+    
+        @GET	
+        @Path("/state")
+        public Response state(){	
+            String output = "the state is OFF";	
+            return Response.status(200).entity(output).build();	
+        }
+    
     	@GET	
         @Path("/start")
         public Response start(){	

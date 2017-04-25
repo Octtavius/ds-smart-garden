@@ -20,7 +20,7 @@
     </servlet>	
     <servlet-mapping>	
         <servlet-name>rest</servlet-name>	
-        <url-pattern>/water/*</url-pattern>	
+        <url-pattern>/*</url-pattern>	
     </servlet-mapping>
     <listener>
         <listener-class>nci.project.smartgarden.MyListener</listener-class>

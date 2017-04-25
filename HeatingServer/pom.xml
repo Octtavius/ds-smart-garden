@@ -48,7 +48,7 @@
 <!-- make jetty listen on 127.0.0.1 for
 better security -->
 <host>127.0.0.1</host>
-<port>3000</port>
+<port>3004</port>
 </httpConnector>
 <scanIntervalSeconds>3</scanIntervalSeconds>
 <webAppConfig>

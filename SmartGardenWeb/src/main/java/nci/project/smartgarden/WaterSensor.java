@@ -13,35 +13,41 @@ import javax.ws.rs.core.Response;
  * @author octavian
  */
 
-@Path("/init")
+@Path("/water")
 public class WaterSensor{
     
-/**
- *
- * @author octavian
- */
-public class ServiceRegistration {
-    public ServiceRegistration() {
-//        try {
-//            //create aJmDNS instance
-//            JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
-//            
-//            //Register  a service
-//            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "example", 1234, "path=index.html");
-//            jmdns.registerService(serviceInfo);
-//            
-//        } catch (UnknownHostException ex) {
-//            Logger.getLogger(ServiceRegistration.class.getName()).log(Level.SEVERE, null, ex);
-//        } catch (IOException ex) {
-//            Logger.getLogger(ServiceRegistration.class.getName()).log(Level.SEVERE, null, ex);
-//        }
+    @GET	
+    @Path("/state")
+    public Response statet(){	
+        String output = "state is ON...water is running";	
+        return Response.status(200).entity(output).build();	
     }
-}
     
-    @GET
-    public Response sayHelloWorld()	{
-        String output = "Hello Jim  >  !";
-//        ServiceRegistration sr = new ServiceRegistration();
-        return Response.status(200).entity(output).build();
-    }	
+    @GET	
+    @Path("/start")
+    public Response start(){	
+        String output = "starting water..";	
+        return Response.status(200).entity(output).build();	
+    }
+
+    @GET	
+    @Path("/stop")
+    public Response stop(){	
+        String output = "stop water..";	
+        return Response.status(200).entity(output).build();	
+    }
+
+    @GET	
+    @Path("/increase-flow")
+    public Response increaseFlow(){	
+        String output = "increase flow of water..";	
+        return Response.status(200).entity(output).build();	
+    }
+    
+    @GET	
+    @Path("/decrease-flow")
+    public Response decreaseFow(){	
+        String output = "decreasing flow of water..";	
+        return Response.status(200).entity(output).build();	
+    }
 }

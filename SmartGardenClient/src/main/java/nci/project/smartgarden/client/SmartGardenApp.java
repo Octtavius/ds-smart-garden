@@ -235,6 +235,11 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
             // Add a service listener
             jmdns.addServiceListener("_nando._tcp.local.", new SampleListener());
+            jmdns.addServiceListener("_water._tcp.local.", new SampleListener());
+            jmdns.addServiceListener("_heating._tcp.local.", new SampleListener());
+            jmdns.addServiceListener("_ceiling._tcp.local.", new SampleListener());
+            jmdns.addServiceListener("_soil._tcp.local.", new SampleListener());
+            jmdns.addServiceListener("_ventilation._tcp.local.", new SampleListener());
             
             System.out.println("Service listener added...");
             
