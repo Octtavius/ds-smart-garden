@@ -31,16 +31,8 @@ public class MyListener implements ServletContextListener{
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
             
             //Register  a service
-            ServiceInfo serviceInfo1 = ServiceInfo.create("_nando._tcp.local.", "start", 4221, "path=index.html");
-            ServiceInfo serviceInfo2 = ServiceInfo.create("_nando._tcp.local.", "stop", 4221, "path=index.html");
-            ServiceInfo serviceInfo3 = ServiceInfo.create("_nando._tcp.local.", "decrease-temperature", 4221, "path=index.html");
-            ServiceInfo serviceInfo4 = ServiceInfo.create("_nando._tcp.local.", "increase-temperature", 4221, "path=index.html");
-            ServiceInfo serviceInfo5 = ServiceInfo.create("_nando._tcp.local.", "current-temperature", 4221, "path=index.html");
-            jmdns.registerService(serviceInfo1);
-            jmdns.registerService(serviceInfo2);
-            jmdns.registerService(serviceInfo3);
-            jmdns.registerService(serviceInfo4);
-            jmdns.registerService(serviceInfo5);
+            ServiceInfo serviceInfo = ServiceInfo.create("_heating._tcp.local.", "heating", 3004, "path=index.html");
+            jmdns.registerService(serviceInfo);
             
         } catch (UnknownHostException ex) {
             System.out.println(ex);
@@ -51,7 +43,7 @@ public class MyListener implements ServletContextListener{
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("contextDestroyed"); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

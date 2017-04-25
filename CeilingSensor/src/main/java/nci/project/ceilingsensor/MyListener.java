@@ -31,7 +31,7 @@ public class MyListener implements ServletContextListener{
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
             
             //Register  a service
-            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "ceiling", 4111, "path=index.html");
+            ServiceInfo serviceInfo = ServiceInfo.create("_ceiling._tcp.local.", "ceiling", 3001, "path=index.html");
             jmdns.registerService(serviceInfo);
             
         } catch (UnknownHostException ex) {
@@ -43,7 +43,7 @@ public class MyListener implements ServletContextListener{
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
 }

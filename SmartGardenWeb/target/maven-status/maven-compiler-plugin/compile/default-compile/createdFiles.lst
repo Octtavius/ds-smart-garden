@@ -1,6 +1,5 @@
-nci/project/smartgarden/ServiceDiscovery$SGListener.class
-nci/project/smartgarden/WaterSensor.class
-nci/project/smartgarden/WaterSensor$ServiceRegistration.class
-nci/project/smartgarden/ServiceDiscovery.class
-nci/project/smartgarden/MyListener.class
-nci/project/smartgarden/ServiceRegistration.class
+nci\project\smartgarden\ServiceRegistration.class
+nci\project\smartgarden\MyListener.class
+nci\project\smartgarden\ServiceDiscovery.class
+nci\project\smartgarden\ServiceDiscovery$SGListener.class
+nci\project\smartgarden\WaterSensor.class

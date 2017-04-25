@@ -31,7 +31,7 @@ public class MyListener implements ServletContextListener{
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
             
             //Register  a service
-            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "ventilation", 4222, "path=index.html");
+            ServiceInfo serviceInfo = ServiceInfo.create("_ventilation._tcp.local.", "ventilation", 3002, "path=index.html");
             jmdns.registerService(serviceInfo);
             
         } catch (UnknownHostException ex) {

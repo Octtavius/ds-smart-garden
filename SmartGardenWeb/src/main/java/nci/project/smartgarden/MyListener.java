@@ -31,13 +31,13 @@ public class MyListener implements ServletContextListener{
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
             
             //Register  a service
-            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "water", 1234, "path=index.html");
+            ServiceInfo serviceInfo = ServiceInfo.create("_water._tcp.local.", "water", 3005, "path=index.html");
             jmdns.registerService(serviceInfo);
             
         } catch (UnknownHostException ex) {
-            Logger.getLogger(WaterSensor.ServiceRegistration.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
         } catch (IOException ex) {
-            Logger.getLogger(WaterSensor.ServiceRegistration.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println(ex);
         }
     }
 
