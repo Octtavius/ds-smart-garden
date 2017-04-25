@@ -31,8 +31,16 @@ public class MyListener implements ServletContextListener{
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
             
             //Register  a service
-            ServiceInfo serviceInfo = ServiceInfo.create("_http._tcp.local.", "heating", 1234, "path=index.html");
-            jmdns.registerService(serviceInfo);
+            ServiceInfo serviceInfo1 = ServiceInfo.create("_nando._tcp.local.", "start", 4221, "path=index.html");
+            ServiceInfo serviceInfo2 = ServiceInfo.create("_nando._tcp.local.", "stop", 4221, "path=index.html");
+            ServiceInfo serviceInfo3 = ServiceInfo.create("_nando._tcp.local.", "decrease-temperature", 4221, "path=index.html");
+            ServiceInfo serviceInfo4 = ServiceInfo.create("_nando._tcp.local.", "increase-temperature", 4221, "path=index.html");
+            ServiceInfo serviceInfo5 = ServiceInfo.create("_nando._tcp.local.", "current-temperature", 4221, "path=index.html");
+            jmdns.registerService(serviceInfo1);
+            jmdns.registerService(serviceInfo2);
+            jmdns.registerService(serviceInfo3);
+            jmdns.registerService(serviceInfo4);
+            jmdns.registerService(serviceInfo5);
             
         } catch (UnknownHostException ex) {
             System.out.println(ex);

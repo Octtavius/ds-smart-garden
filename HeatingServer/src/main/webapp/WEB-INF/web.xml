@@ -18,10 +18,10 @@
             <param-value>nci.project.heatingserver</param-value>	
         </init-param>	
     </servlet>	
-<!--    <servlet-mapping>	
+    <servlet-mapping>	
         <servlet-name>rest</servlet-name>	
-        <url-pattern>/api/*</url-pattern>	
-    </servlet-mapping>	-->
+        <url-pattern>/*</url-pattern>	
+    </servlet-mapping>	
     
     <listener>
         <listener-class>nci.project.heatingserver.MyListener</listener-class>
