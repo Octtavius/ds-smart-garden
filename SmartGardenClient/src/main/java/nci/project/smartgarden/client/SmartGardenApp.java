@@ -40,6 +40,10 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private DefaultListModel logList = new DefaultListModel();
     private static AppLog logger;
     
+    // Sensors
+    private VentilationSensor ventilationSensor;
+    
+    
     /**
      * Creates new form SmartGardenApp
      */
@@ -62,6 +66,35 @@ public class SmartGardenApp extends javax.swing.JFrame {
         
     }
 
+    
+    private void createSensor(ServiceEvent event) {
+        System.out.println("Name: " + event.getName());
+        switch(event.getName().toString()) {
+            case "ventilation":
+                String address = event.getInfo().getHostAddresses()[0].trim();
+                int port = event.getInfo().getPort();
+                ventilationSensor = new VentilationSensor(address, port);
+                logger.log("Ventilation Service state: "+ ventilationSensor.getState());
+                toggleVentilationSensor();
+                break;
+        }
+        
+       
+    }
+    
+    private void toggleVentilationSensor() {
+        if(lblVntilationState.getText().equals("OFF")) {
+            lblVntilationState.setText("ON");
+            btnVentilationStart.setEnabled(true);
+            btnVentilationStop.setEnabled(true);
+            btnIncreaseVentilation.setEnabled(true);
+            btnDecreaseVentialtion.setEnabled(true);
+        }
+        
+    }
+    
+ 
+    
     private class AppLog {
         public void start() {
             listLog.setModel(logList);
@@ -92,9 +125,13 @@ public class SmartGardenApp extends javax.swing.JFrame {
                 //GetRequest.request("http://localhost:"+port+"/"+path);
                 sensorList.addElement(info.getName() + " : " + info.getPort());
                 logger.log("Service found: " + info.getHostAddresses()[0] + " " + info.getPort());
+                createSensor(event);
             }
+
+        
     }
     
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -123,7 +160,12 @@ public class SmartGardenApp extends javax.swing.JFrame {
         label3 = new java.awt.Label();
         jPanel5 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
-        label4 = new java.awt.Label();
+        lblVntilationState = new java.awt.Label();
+        btnVentilationStop = new javax.swing.JButton();
+        btnVentilationStart = new javax.swing.JButton();
+        btnIncreaseVentilation = new javax.swing.JButton();
+        btnDecreaseVentialtion = new javax.swing.JButton();
+        jLabel6 = new javax.swing.JLabel();
         jPanel6 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
         label5 = new java.awt.Label();
@@ -302,7 +344,41 @@ public class SmartGardenApp extends javax.swing.JFrame {
         jLabel5.setBackground(new java.awt.Color(102, 102, 102));
         jLabel5.setIcon( new ImageIcon("src/main/java/nci/project/smartgarden/client/resources/wind_icon.png"));
 
-        label4.setText("OFF");
+        lblVntilationState.setText("OFF");
+
+        btnVentilationStop.setText("Stop");
+        btnVentilationStop.setEnabled(false);
+        btnVentilationStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVentilationStopActionPerformed(evt);
+            }
+        });
+
+        btnVentilationStart.setText("Start");
+        btnVentilationStart.setEnabled(false);
+        btnVentilationStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnVentilationStartActionPerformed(evt);
+            }
+        });
+
+        btnIncreaseVentilation.setEnabled(false);
+        btnIncreaseVentilation.setLabel("+");
+        btnIncreaseVentilation.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIncreaseVentilationActionPerformed(evt);
+            }
+        });
+
+        btnDecreaseVentialtion.setEnabled(false);
+        btnDecreaseVentialtion.setLabel("-");
+        btnDecreaseVentialtion.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDecreaseVentialtionActionPerformed(evt);
+            }
+        });
+
+        jLabel6.setText("Change Air Flow:");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -311,20 +387,47 @@ public class SmartGardenApp extends javax.swing.JFrame {
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(52, 52, 52)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addComponent(btnVentilationStop)
+                        .addGap(49, 49, 49))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                        .addComponent(btnVentilationStart)
+                        .addGap(50, 50, 50)))
+                .addComponent(jLabel6)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnDecreaseVentialtion, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnIncreaseVentilation, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(label4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblVntilationState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGap(23, 23, 23)
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(25, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(label4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblVntilationState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36))
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(23, 23, 23)
+                        .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnVentilationStart)
+                            .addComponent(btnIncreaseVentilation))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnVentilationStop)
+                            .addComponent(btnDecreaseVentialtion)))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(38, 38, 38)
+                        .addComponent(jLabel6)))
+                .addContainerGap(13, Short.MAX_VALUE))
         );
 
         jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -509,8 +612,25 @@ public class SmartGardenApp extends javax.swing.JFrame {
     }//GEN-LAST:event_jButton2ActionPerformed
 
     private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        
+        VentilationSensor sensor = new VentilationSensor("127.0.0.1", 3002);
+        logger.log(sensor.getState());
     }//GEN-LAST:event_jButton3ActionPerformed
+
+    private void btnVentilationStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVentilationStartActionPerformed
+        logger.log(ventilationSensor.start());
+    }//GEN-LAST:event_btnVentilationStartActionPerformed
+
+    private void btnVentilationStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVentilationStopActionPerformed
+       logger.log(ventilationSensor.stop());
+    }//GEN-LAST:event_btnVentilationStopActionPerformed
+
+    private void btnIncreaseVentilationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncreaseVentilationActionPerformed
+        logger.log(ventilationSensor.increaseFlow());
+    }//GEN-LAST:event_btnIncreaseVentilationActionPerformed
+
+    private void btnDecreaseVentialtionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecreaseVentialtionActionPerformed
+        logger.log(ventilationSensor.decreaseFlow());
+    }//GEN-LAST:event_btnDecreaseVentialtionActionPerformed
 
     /**
      * @param args the command line arguments
@@ -549,6 +669,10 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton btnDecreaseVentialtion;
+    private javax.swing.JButton btnIncreaseVentilation;
+    private javax.swing.JButton btnVentilationStart;
+    private javax.swing.JButton btnVentilationStop;
     private javax.swing.JMenuItem exitMenuItem;
     private javax.swing.JMenu fileMenu;
     private javax.swing.JMenu helpMenu;
@@ -560,6 +684,7 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -571,9 +696,9 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private java.awt.Label label1;
     private java.awt.Label label2;
     private java.awt.Label label3;
-    private java.awt.Label label4;
     private java.awt.Label label5;
     private java.awt.Label label6;
+    private java.awt.Label lblVntilationState;
     private javax.swing.JList<String> listLog;
     private javax.swing.JMenuBar menuBar;
     private javax.swing.JScrollPane scrollPanelLog;

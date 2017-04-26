@@ -9,18 +9,21 @@ package nci.project.smartgarden.client;
  *
  * @author Nando
  */
-public abstract class SensorImpl {
+public abstract class AbstractSensor {
 
     private int sensor_port = 0;
     private String sensor_address = "";
     
-    public void Sensor(int port, String address) {
+    public AbstractSensor(String address, int port) {
         this.sensor_port = port;
         this.sensor_address = address;
         String key = address + "+" + Integer.toString(port);
         
-        System.out.println("Sensor created(" + key.hashCode() + "): " + address + ":" + "port");
+        System.out.println("Sensor created(" + key.hashCode() + "): " + address + ":" + port);
     }
+    
+    
+    public abstract String getState();
     
     
     /**
