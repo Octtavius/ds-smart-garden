@@ -42,6 +42,7 @@ public class SmartGardenApp extends javax.swing.JFrame {
     
     // Sensors
     private VentilationSensor ventilationSensor;
+    private HeatingSensor heatingSensor;
     
     
     /**
@@ -69,13 +70,20 @@ public class SmartGardenApp extends javax.swing.JFrame {
     
     private void createSensor(ServiceEvent event) {
         System.out.println("Name: " + event.getName());
+        
+        String address = event.getInfo().getHostAddresses()[0].trim();
+        int port = event.getInfo().getPort();
+        
         switch(event.getName().toString()) {
             case "ventilation":
-                String address = event.getInfo().getHostAddresses()[0].trim();
-                int port = event.getInfo().getPort();
                 ventilationSensor = new VentilationSensor(address, port);
                 logger.log("Ventilation Service state: "+ ventilationSensor.getState());
                 toggleVentilationSensor();
+                break;
+            case "heating":
+                heatingSensor = new HeatingSensor(address, port);
+                logger.log("Ventilation Service state: "+ heatingSensor.getState());
+                toggleHeatingSensor();
                 break;
         }
         
@@ -83,6 +91,18 @@ public class SmartGardenApp extends javax.swing.JFrame {
     }
     
     private void toggleVentilationSensor() {
+        if(lblHeatingState.getText().equals("OFF")) {
+            lblHeatingState.setText("ON");
+            btnHeatingStart.setEnabled(true);
+            btnHeatingStop.setEnabled(true);
+            btnIncreaseHeating.setEnabled(true);
+            btnDecreaseHeating.setEnabled(true);
+            btnReadCurrentTemp.setEnabled(true);
+        }
+        
+    }
+
+    private void toggleHeatingSensor() {
         if(lblVntilationState.getText().equals("OFF")) {
             lblVntilationState.setText("ON");
             btnVentilationStart.setEnabled(true);
@@ -91,8 +111,7 @@ public class SmartGardenApp extends javax.swing.JFrame {
             btnDecreaseVentialtion.setEnabled(true);
         }
         
-    }
-    
+    }    
  
     
     private class AppLog {
@@ -157,7 +176,15 @@ public class SmartGardenApp extends javax.swing.JFrame {
         label2 = new java.awt.Label();
         jPanel4 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
-        label3 = new java.awt.Label();
+        lblHeatingState = new java.awt.Label();
+        btnHeatingStop = new javax.swing.JButton();
+        btnHeatingStart = new javax.swing.JButton();
+        jLabel7 = new javax.swing.JLabel();
+        btnIncreaseHeating = new javax.swing.JButton();
+        btnDecreaseHeating = new javax.swing.JButton();
+        jLabel8 = new javax.swing.JLabel();
+        lblCurrentTemperature = new javax.swing.JLabel();
+        btnReadCurrentTemp = new javax.swing.JButton();
         jPanel5 = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         lblVntilationState = new java.awt.Label();
@@ -313,7 +340,53 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
         jLabel3.setIcon( new ImageIcon("src/main/java/nci/project/smartgarden/client/resources/temp_icon.png"));
 
-        label3.setText("OFF");
+        lblHeatingState.setText("OFF");
+
+        btnHeatingStop.setText("Stop");
+        btnHeatingStop.setEnabled(false);
+        btnHeatingStop.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHeatingStopActionPerformed(evt);
+            }
+        });
+
+        btnHeatingStart.setText("Start");
+        btnHeatingStart.setEnabled(false);
+        btnHeatingStart.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnHeatingStartActionPerformed(evt);
+            }
+        });
+
+        jLabel7.setText("Change Temperature:");
+
+        btnIncreaseHeating.setEnabled(false);
+        btnIncreaseHeating.setLabel("+");
+        btnIncreaseHeating.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnIncreaseHeatingActionPerformed(evt);
+            }
+        });
+
+        btnDecreaseHeating.setEnabled(false);
+        btnDecreaseHeating.setLabel("-");
+        btnDecreaseHeating.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDecreaseHeatingActionPerformed(evt);
+            }
+        });
+
+        jLabel8.setText("Currrent Temp: ");
+
+        lblCurrentTemperature.setText("0");
+
+        btnReadCurrentTemp.setText("Read Temperature");
+        btnReadCurrentTemp.setEnabled(false);
+        btnReadCurrentTemp.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnReadCurrentTempActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -322,9 +395,31 @@ public class SmartGardenApp extends javax.swing.JFrame {
             .addGroup(jPanel4Layout.createSequentialGroup()
                 .addGap(25, 25, 25)
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
+                .addGap(51, 51, 51)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnHeatingStop, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnHeatingStart)
+                        .addGap(1, 1, 1)))
+                .addGap(18, 18, 18)
+                .addComponent(jLabel7)
+                .addGap(13, 13, 13)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(btnDecreaseHeating, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btnIncreaseHeating, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(37, 37, 37)
+                        .addComponent(btnReadCurrentTemp)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(lblHeatingState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addContainerGap())
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(52, 52, 52)
+                        .addComponent(jLabel8)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(lblCurrentTemperature)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -335,8 +430,29 @@ public class SmartGardenApp extends javax.swing.JFrame {
                         .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(36, 36, 36)
-                        .addComponent(label3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lblHeatingState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(24, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnIncreaseHeating)
+                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel8)
+                                .addComponent(lblCurrentTemperature)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(btnDecreaseHeating)
+                            .addComponent(btnReadCurrentTemp)))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addGap(26, 26, 26)
+                        .addComponent(jLabel7))
+                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(btnHeatingStart)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(btnHeatingStop)))
+                .addGap(12, 12, 12))
         );
 
         jPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
@@ -632,6 +748,28 @@ public class SmartGardenApp extends javax.swing.JFrame {
         logger.log(ventilationSensor.decreaseFlow());
     }//GEN-LAST:event_btnDecreaseVentialtionActionPerformed
 
+    private void btnHeatingStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHeatingStartActionPerformed
+        logger.log(heatingSensor.start());
+    }//GEN-LAST:event_btnHeatingStartActionPerformed
+
+    private void btnHeatingStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHeatingStopActionPerformed
+        logger.log(heatingSensor.stop());
+    }//GEN-LAST:event_btnHeatingStopActionPerformed
+
+    private void btnIncreaseHeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncreaseHeatingActionPerformed
+        logger.log(heatingSensor.increaseTemp());
+    }//GEN-LAST:event_btnIncreaseHeatingActionPerformed
+
+    private void btnDecreaseHeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecreaseHeatingActionPerformed
+        logger.log(heatingSensor.decreaseTemp());
+    }//GEN-LAST:event_btnDecreaseHeatingActionPerformed
+
+    private void btnReadCurrentTempActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadCurrentTempActionPerformed
+        String temp = heatingSensor.getCurrentTemp();
+        logger.log("Current temp: " + temp);
+        lblCurrentTemperature.setText(temp);
+    }//GEN-LAST:event_btnReadCurrentTempActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -669,8 +807,13 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JMenuItem aboutMenuItem;
+    private javax.swing.JButton btnDecreaseHeating;
     private javax.swing.JButton btnDecreaseVentialtion;
+    private javax.swing.JButton btnHeatingStart;
+    private javax.swing.JButton btnHeatingStop;
+    private javax.swing.JButton btnIncreaseHeating;
     private javax.swing.JButton btnIncreaseVentilation;
+    private javax.swing.JButton btnReadCurrentTemp;
     private javax.swing.JButton btnVentilationStart;
     private javax.swing.JButton btnVentilationStop;
     private javax.swing.JMenuItem exitMenuItem;
@@ -685,6 +828,8 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JList<String> jList1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -695,9 +840,10 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private java.awt.Label label1;
     private java.awt.Label label2;
-    private java.awt.Label label3;
     private java.awt.Label label5;
     private java.awt.Label label6;
+    private javax.swing.JLabel lblCurrentTemperature;
+    private java.awt.Label lblHeatingState;
     private java.awt.Label lblVntilationState;
     private javax.swing.JList<String> listLog;
     private javax.swing.JMenuBar menuBar;
