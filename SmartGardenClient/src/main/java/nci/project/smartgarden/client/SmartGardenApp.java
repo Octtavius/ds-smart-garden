@@ -5,6 +5,7 @@
  */
 package nci.project.smartgarden.client;
 
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -41,8 +42,11 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private static AppLog logger;
     
     // Sensors
+    private SoilSensor soilSensor;
+    private WaterSensor waterSensor;
     private VentilationSensor ventilationSensor;
     private HeatingSensor heatingSensor;
+    private CeilingSensor ceilingSensor;
     
     
     /**
@@ -75,6 +79,16 @@ public class SmartGardenApp extends javax.swing.JFrame {
         int port = event.getInfo().getPort();
         
         switch(event.getName().toString()) {
+            case "soil":
+                soilSensor = new SoilSensor(address, port);
+                //logger.log("Soil Service state: "+ soilSensor.getState());
+                toggleSoilSensorPanel();
+                break;
+            case "water":
+                waterSensor = new WaterSensor(address, port);
+                logger.log("Water Service state: "+ waterSensor.getState());
+                toggleWaterSensorPanel();
+                break;
             case "ventilation":
                 ventilationSensor = new VentilationSensor(address, port);
                 logger.log("Ventilation Service state: "+ ventilationSensor.getState());
@@ -82,37 +96,98 @@ public class SmartGardenApp extends javax.swing.JFrame {
                 break;
             case "heating":
                 heatingSensor = new HeatingSensor(address, port);
-                logger.log("Ventilation Service state: "+ heatingSensor.getState());
-                toggleHeatingSensor();
+                logger.log("Heating Service state: "+ heatingSensor.getState());
+                toggleHeatingSensorPanel();
+                break;
+            case "ceiling":
+                ceilingSensor = new CeilingSensor(address, port);
+                logger.log("Ceiling Service state: "+ ceilingSensor.getState());
+                toggleCeilingSensorPanel();
                 break;
         }
-        
-       
     }
     
-    private void toggleVentilationSensor() {
+    private void destroySensor(ServiceEvent event) {
+        System.out.println("Name: " + event.getName());
+        
+        switch(event.getName().toString()) {
+            case "soil":
+                soilSensor = null;
+                logger.log("Soil Service removed");
+                toggleSoilSensorPanel();
+                break;
+            case "water":
+                waterSensor = null;
+                logger.log("Water Service removed");
+                toggleWaterSensorPanel();
+                break;
+            case "ventilation":
+                ventilationSensor = null;
+                logger.log("Ventilation Service removed");
+                toggleVentilationSensor();
+                break;
+            case "heating":
+                heatingSensor = null;
+                logger.log("Heating Service state:");
+                toggleHeatingSensorPanel();
+                break;
+            case "ceiling":
+                ceilingSensor = null;
+                logger.log("Ceiling Service removed");
+                toggleCeilingSensorPanel();
+                break;
+        }
+    }
+    
+    
+    private void toggleSoilSensorPanel() {
+        Boolean state = lblSoilSate.getText().equals("OFF") ? true : false;
+        if (state == true) {
+            lblSoilSate.setText("ON");
+        } else {
+            lblSoilSate.setText("OFF");
+        }
+        for (Component cp : panelSoilSensor.getComponents() ){
+            cp.setEnabled(state);
+        }
+    }
+    
+        private void toggleWaterSensorPanel() {
+        if(lblWaterState.getText().equals("OFF")) {
+            lblWaterState.setText("ON");
+            for (Component cp : panelWaterSensor.getComponents() ){
+                cp.setEnabled(true);
+            }
+        }
+    }
+        
+    private void toggleHeatingSensorPanel() {
         if(lblHeatingState.getText().equals("OFF")) {
             lblHeatingState.setText("ON");
-            btnHeatingStart.setEnabled(true);
-            btnHeatingStop.setEnabled(true);
-            btnIncreaseHeating.setEnabled(true);
-            btnDecreaseHeating.setEnabled(true);
-            btnReadCurrentTemp.setEnabled(true);
+            for (Component cp : panelHeatingSensor.getComponents() ){
+                cp.setEnabled(true);
+            }
         }
-        
     }
 
-    private void toggleHeatingSensor() {
+    
+    private void toggleVentilationSensor() {
         if(lblVntilationState.getText().equals("OFF")) {
             lblVntilationState.setText("ON");
-            btnVentilationStart.setEnabled(true);
-            btnVentilationStop.setEnabled(true);
-            btnIncreaseVentilation.setEnabled(true);
-            btnDecreaseVentialtion.setEnabled(true);
+            for (Component cp : panelVentilationSensor.getComponents() ){
+                cp.setEnabled(true);
+            }
         }
-        
     }    
  
+    private void toggleCeilingSensorPanel() {
+        if(lblCeilingState.getText().equals("OFF")) {
+            lblCeilingState.setText("ON");
+            for (Component cp : panelCeilingSensor.getComponents() ){
+                cp.setEnabled(true);
+            }
+        }
+    }
     
     private class AppLog {
         public void start() {
@@ -133,6 +208,7 @@ public class SmartGardenApp extends javax.swing.JFrame {
             @Override
             public void serviceRemoved(ServiceEvent event) {
                     System.out.println("Service removed: " + event.getInfo());
+                    destroySensor(event);
             }
 
             @Override
@@ -168,9 +244,9 @@ public class SmartGardenApp extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jButton3 = new javax.swing.JButton();
-        jPanel1 = new javax.swing.JPanel();
+        panelSoilSensor = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
-        label1 = new java.awt.Label();
+        lblSoilSate = new java.awt.Label();
         jLabel13 = new javax.swing.JLabel();
         lblCurrentTemperature1 = new javax.swing.JLabel();
         btnReadHumidity = new javax.swing.JButton();
@@ -184,9 +260,9 @@ public class SmartGardenApp extends javax.swing.JFrame {
         jLabel16 = new javax.swing.JLabel();
         lblCurrentTemperature4 = new javax.swing.JLabel();
         jLabel17 = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
+        panelWaterSensor = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        label2 = new java.awt.Label();
+        lblWaterState = new java.awt.Label();
         btnWaterStop = new javax.swing.JButton();
         btnDecreaseWater = new javax.swing.JButton();
         btnReadCurrentWater = new javax.swing.JButton();
@@ -195,8 +271,8 @@ public class SmartGardenApp extends javax.swing.JFrame {
         btnWaterStart = new javax.swing.JButton();
         lblCurrentWater = new javax.swing.JLabel();
         jLabel12 = new javax.swing.JLabel();
-        jPanel4 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
+        panelHeatingSensor = new javax.swing.JPanel();
+        lblHeatingIcon = new javax.swing.JLabel();
         lblHeatingState = new java.awt.Label();
         btnHeatingStop = new javax.swing.JButton();
         btnHeatingStart = new javax.swing.JButton();
@@ -206,7 +282,7 @@ public class SmartGardenApp extends javax.swing.JFrame {
         jLabel8 = new javax.swing.JLabel();
         lblCurrentTemperature = new javax.swing.JLabel();
         btnReadCurrentTemp = new javax.swing.JButton();
-        jPanel5 = new javax.swing.JPanel();
+        panelVentilationSensor = new javax.swing.JPanel();
         jLabel5 = new javax.swing.JLabel();
         lblVntilationState = new java.awt.Label();
         btnVentilationStop = new javax.swing.JButton();
@@ -214,9 +290,9 @@ public class SmartGardenApp extends javax.swing.JFrame {
         btnIncreaseVentilation = new javax.swing.JButton();
         btnDecreaseVentialtion = new javax.swing.JButton();
         jLabel6 = new javax.swing.JLabel();
-        jPanel6 = new javax.swing.JPanel();
+        panelCeilingSensor = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
-        label5 = new java.awt.Label();
+        lblCeilingState = new java.awt.Label();
         jButton4 = new javax.swing.JButton();
         jButton5 = new javax.swing.JButton();
         jButton6 = new javax.swing.JButton();
@@ -299,11 +375,11 @@ public class SmartGardenApp extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        panelSoilSensor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel2.setIcon( new ImageIcon("src/main/java/nci/project/smartgarden/client/resources/soil_icon.png"));
 
-        label1.setText("OFF");
+        lblSoilSate.setText("OFF");
 
         jLabel13.setText("Humidity ");
 
@@ -355,83 +431,83 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
         jLabel17.setText("Read the current values");
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelSoilSensorLayout = new javax.swing.GroupLayout(panelSoilSensor);
+        panelSoilSensor.setLayout(panelSoilSensorLayout);
+        panelSoilSensorLayout.setHorizontalGroup(
+            panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelSoilSensorLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel17)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(panelSoilSensorLayout.createSequentialGroup()
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(30, 30, 30)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnReadHumidity)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(panelSoilSensorLayout.createSequentialGroup()
                                 .addGap(15, 15, 15)
                                 .addComponent(jLabel13)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblCurrentTemperature1)))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnReadTemperature)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(panelSoilSensorLayout.createSequentialGroup()
                                 .addGap(15, 15, 15)
                                 .addComponent(jLabel14)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblCurrentTemperature2)))
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(btnReadLight)
-                            .addGroup(jPanel1Layout.createSequentialGroup()
+                            .addGroup(panelSoilSensorLayout.createSequentialGroup()
                                 .addGap(15, 15, 15)
                                 .addComponent(jLabel15)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(lblCurrentTemperature3)))))
                 .addGap(27, 27, 27)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnReadNutrition)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(panelSoilSensorLayout.createSequentialGroup()
                         .addComponent(jLabel16)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblCurrentTemperature4)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblSoilSate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+        panelSoilSensorLayout.setVerticalGroup(
+            panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelSoilSensorLayout.createSequentialGroup()
+                .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(panelSoilSensorLayout.createSequentialGroup()
+                        .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel14)
                             .addComponent(lblCurrentTemperature2))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnReadTemperature))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(panelSoilSensorLayout.createSequentialGroup()
+                        .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel13)
                             .addComponent(lblCurrentTemperature1))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnReadHumidity))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
+                    .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panelSoilSensorLayout.createSequentialGroup()
                             .addGap(22, 22, 22)
                             .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGroup(panelSoilSensorLayout.createSequentialGroup()
                             .addGap(35, 35, 35)
-                            .addComponent(label1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(lblSoilSate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(panelSoilSensorLayout.createSequentialGroup()
+                            .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel16)
                                 .addComponent(lblCurrentTemperature4))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                             .addComponent(btnReadNutrition))
-                        .addGroup(jPanel1Layout.createSequentialGroup()
-                            .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panelSoilSensorLayout.createSequentialGroup()
+                            .addGroup(panelSoilSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel15)
                                 .addComponent(lblCurrentTemperature3))
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -441,13 +517,13 @@ public class SmartGardenApp extends javax.swing.JFrame {
                 .addContainerGap(10, Short.MAX_VALUE))
         );
 
-        label1.getAccessibleContext().setAccessibleName("ON");
+        lblSoilSate.getAccessibleContext().setAccessibleName("ON");
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        panelWaterSensor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel1.setIcon( new ImageIcon("src/main/java/nci/project/smartgarden/client/resources/water_icon.png"));
 
-        label2.setText("OFF");
+        lblWaterState.setText("OFF");
 
         btnWaterStop.setText("Stop");
         btnWaterStop.setEnabled(false);
@@ -495,66 +571,66 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
         jLabel12.setText("Currrent Flow: ");
 
-        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
-        jPanel2.setLayout(jPanel2Layout);
-        jPanel2Layout.setHorizontalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelWaterSensorLayout = new javax.swing.GroupLayout(panelWaterSensor);
+        panelWaterSensor.setLayout(panelWaterSensorLayout);
+        panelWaterSensorLayout.setHorizontalGroup(
+            panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelWaterSensorLayout.createSequentialGroup()
                 .addGap(24, 24, 24)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnWaterStop, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelWaterSensorLayout.createSequentialGroup()
                         .addComponent(btnWaterStart)
                         .addGap(1, 1, 1)))
                 .addGap(40, 40, 40)
                 .addComponent(jLabel11)
                 .addGap(13, 13, 13)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnDecreaseWater, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnIncreaseWater, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                .addGroup(panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelWaterSensorLayout.createSequentialGroup()
                         .addGap(37, 37, 37)
                         .addComponent(btnReadCurrentWater))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGroup(panelWaterSensorLayout.createSequentialGroup()
                         .addGap(52, 52, 52)
                         .addComponent(jLabel12)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblCurrentWater)))
                 .addGap(17, 17, 17)
-                .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblWaterState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        jPanel2Layout.setVerticalGroup(
-            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+        panelWaterSensorLayout.setVerticalGroup(
+            panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelWaterSensorLayout.createSequentialGroup()
+                .addGroup(panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelWaterSensorLayout.createSequentialGroup()
                         .addGap(19, 19, 19)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                    .addGroup(panelWaterSensorLayout.createSequentialGroup()
                         .addGap(36, 36, 36)
-                        .addComponent(label2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(lblWaterState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelWaterSensorLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel2Layout.createSequentialGroup()
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelWaterSensorLayout.createSequentialGroup()
+                                .addGroup(panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                         .addComponent(jLabel12)
                                         .addComponent(lblCurrentWater))
                                     .addComponent(btnIncreaseWater))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addGroup(panelWaterSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                     .addComponent(btnDecreaseWater)
                                     .addComponent(btnReadCurrentWater)))
-                            .addGroup(jPanel2Layout.createSequentialGroup()
+                            .addGroup(panelWaterSensorLayout.createSequentialGroup()
                                 .addGap(26, 26, 26)
                                 .addComponent(jLabel11)))))
                 .addContainerGap(11, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel2Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelWaterSensorLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
                 .addComponent(btnWaterStart)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -562,9 +638,9 @@ public class SmartGardenApp extends javax.swing.JFrame {
                 .addGap(10, 10, 10))
         );
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        panelHeatingSensor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        jLabel3.setIcon( new ImageIcon("src/main/java/nci/project/smartgarden/client/resources/temp_icon.png"));
+        lblHeatingIcon.setIcon( new ImageIcon("src/main/java/nci/project/smartgarden/client/resources/temp_icon.png"));
 
         lblHeatingState.setText("OFF");
 
@@ -614,74 +690,74 @@ public class SmartGardenApp extends javax.swing.JFrame {
             }
         });
 
-        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
-        jPanel4.setLayout(jPanel4Layout);
-        jPanel4Layout.setHorizontalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelHeatingSensorLayout = new javax.swing.GroupLayout(panelHeatingSensor);
+        panelHeatingSensor.setLayout(panelHeatingSensorLayout);
+        panelHeatingSensorLayout.setHorizontalGroup(
+            panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelHeatingSensorLayout.createSequentialGroup()
                 .addGap(25, 25, 25)
-                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(lblHeatingIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(51, 51, 51)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnHeatingStop, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelHeatingSensorLayout.createSequentialGroup()
                         .addComponent(btnHeatingStart)
                         .addGap(1, 1, 1)))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel7)
                 .addGap(13, 13, 13)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnDecreaseHeating, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnIncreaseHeating, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGroup(panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelHeatingSensorLayout.createSequentialGroup()
                         .addGap(37, 37, 37)
                         .addComponent(btnReadCurrentTemp)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 17, Short.MAX_VALUE)
                         .addComponent(lblHeatingState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addContainerGap())
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addGroup(panelHeatingSensorLayout.createSequentialGroup()
                         .addGap(52, 52, 52)
                         .addComponent(jLabel8)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(lblCurrentTemperature)
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
         );
-        jPanel4Layout.setVerticalGroup(
-            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel4Layout.createSequentialGroup()
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+        panelHeatingSensorLayout.setVerticalGroup(
+            panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelHeatingSensorLayout.createSequentialGroup()
+                .addGroup(panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelHeatingSensorLayout.createSequentialGroup()
                         .addGap(24, 24, 24)
-                        .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                        .addComponent(lblHeatingIcon, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(panelHeatingSensorLayout.createSequentialGroup()
                         .addGap(36, 36, 36)
                         .addComponent(lblHeatingState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap(24, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelHeatingSensorLayout.createSequentialGroup()
                 .addGap(0, 0, Short.MAX_VALUE)
-                .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelHeatingSensorLayout.createSequentialGroup()
+                        .addGroup(panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel8)
                                 .addComponent(lblCurrentTemperature))
                             .addComponent(btnIncreaseHeating))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panelHeatingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnDecreaseHeating)
                             .addComponent(btnReadCurrentTemp)))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addGroup(panelHeatingSensorLayout.createSequentialGroup()
                         .addGap(26, 26, 26)
                         .addComponent(jLabel7))
-                    .addGroup(jPanel4Layout.createSequentialGroup()
+                    .addGroup(panelHeatingSensorLayout.createSequentialGroup()
                         .addComponent(btnHeatingStart)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(btnHeatingStop)))
                 .addGap(12, 12, 12))
         );
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        panelVentilationSensor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel5.setBackground(new java.awt.Color(102, 102, 102));
         jLabel5.setIcon( new ImageIcon("src/main/java/nci/project/smartgarden/client/resources/wind_icon.png"));
@@ -722,68 +798,67 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
         jLabel6.setText("Change Air Flow:");
 
-        javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
-        jPanel5.setLayout(jPanel5Layout);
-        jPanel5Layout.setHorizontalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel5Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelVentilationSensorLayout = new javax.swing.GroupLayout(panelVentilationSensor);
+        panelVentilationSensor.setLayout(panelVentilationSensorLayout);
+        panelVentilationSensorLayout.setHorizontalGroup(
+            panelVentilationSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelVentilationSensorLayout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(52, 52, 52)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                .addGroup(panelVentilationSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelVentilationSensorLayout.createSequentialGroup()
                         .addComponent(btnVentilationStop)
                         .addGap(49, 49, 49))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelVentilationSensorLayout.createSequentialGroup()
                         .addComponent(btnVentilationStart)
                         .addGap(50, 50, 50)))
                 .addComponent(jLabel6)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelVentilationSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(btnDecreaseVentialtion, javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(btnIncreaseVentilation, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblVntilationState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        jPanel5Layout.setVerticalGroup(
-            jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
+        panelVentilationSensorLayout.setVerticalGroup(
+            panelVentilationSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelVentilationSensorLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(lblVntilationState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(36, 36, 36))
-            .addGroup(jPanel5Layout.createSequentialGroup()
-                .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel5Layout.createSequentialGroup()
+            .addGroup(panelVentilationSensorLayout.createSequentialGroup()
+                .addGroup(panelVentilationSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelVentilationSensorLayout.createSequentialGroup()
                         .addGap(23, 23, 23)
                         .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addGroup(panelVentilationSensorLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panelVentilationSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnVentilationStart)
                             .addComponent(btnIncreaseVentilation))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panelVentilationSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(btnVentilationStop)
                             .addComponent(btnDecreaseVentialtion)))
-                    .addGroup(jPanel5Layout.createSequentialGroup()
+                    .addGroup(panelVentilationSensorLayout.createSequentialGroup()
                         .addGap(38, 38, 38)
                         .addComponent(jLabel6)))
                 .addContainerGap(19, Short.MAX_VALUE))
         );
 
-        jPanel6.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
+        panelCeilingSensor.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
         jLabel4.setBackground(new java.awt.Color(102, 102, 102));
         jLabel4.setIcon( new ImageIcon("src/main/java/nci/project/smartgarden/client/resources/ceilling_icon.png"));
 
-        label5.setText("OFF");
+        lblCeilingState.setText("OFF");
 
         jButton4.setText("Get State");
         jButton4.setEnabled(false);
 
         jButton5.setText("Open");
-        jButton5.setActionCommand("Open");
         jButton5.setEnabled(false);
         jButton5.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -792,7 +867,6 @@ public class SmartGardenApp extends javax.swing.JFrame {
         });
 
         jButton6.setText("Close");
-        jButton6.setActionCommand("Close");
         jButton6.setEnabled(false);
         jButton6.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -804,54 +878,54 @@ public class SmartGardenApp extends javax.swing.JFrame {
 
         jLabel10.setText("Open");
 
-        javax.swing.GroupLayout jPanel6Layout = new javax.swing.GroupLayout(jPanel6);
-        jPanel6.setLayout(jPanel6Layout);
-        jPanel6Layout.setHorizontalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
+        javax.swing.GroupLayout panelCeilingSensorLayout = new javax.swing.GroupLayout(panelCeilingSensor);
+        panelCeilingSensor.setLayout(panelCeilingSensorLayout);
+        panelCeilingSensorLayout.setHorizontalGroup(
+            panelCeilingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelCeilingSensorLayout.createSequentialGroup()
                 .addGap(26, 26, 26)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(30, 30, 30)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGroup(panelCeilingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelCeilingSensorLayout.createSequentialGroup()
                         .addComponent(jLabel9)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel10))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
+                    .addGroup(panelCeilingSensorLayout.createSequentialGroup()
                         .addGap(15, 15, 15)
                         .addComponent(jButton4)))
                 .addGap(105, 105, 105)
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGroup(panelCeilingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelCeilingSensorLayout.createSequentialGroup()
                         .addComponent(jButton5)
                         .addGap(0, 0, Short.MAX_VALUE))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
+                    .addGroup(panelCeilingSensorLayout.createSequentialGroup()
                         .addComponent(jButton6)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(label5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(lblCeilingState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
-        jPanel6Layout.setVerticalGroup(
-            jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel6Layout.createSequentialGroup()
+        panelCeilingSensorLayout.setVerticalGroup(
+            panelCeilingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(panelCeilingSensorLayout.createSequentialGroup()
                 .addGap(22, 22, 22)
                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCeilingSensorLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(panelCeilingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jButton5)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, panelCeilingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(jLabel9)
                         .addComponent(jLabel10)))
-                .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(jPanel6Layout.createSequentialGroup()
+                .addGroup(panelCeilingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(panelCeilingSensorLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(label5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(lblCeilingState, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(34, 34, 34))
-                    .addGroup(jPanel6Layout.createSequentialGroup()
+                    .addGroup(panelCeilingSensorLayout.createSequentialGroup()
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addGroup(panelCeilingSensorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jButton6)
                             .addComponent(jButton4))
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
@@ -894,11 +968,11 @@ public class SmartGardenApp extends javax.swing.JFrame {
                         .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 273, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(jPanel6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
+                            .addComponent(panelSoilSensor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(panelWaterSensor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(panelHeatingSensor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(panelVentilationSensor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(panelCeilingSensor, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -906,15 +980,15 @@ public class SmartGardenApp extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelSoilSensor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelWaterSensor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelHeatingSensor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(panelVentilationSensor, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(panelCeilingSensor, javax.swing.GroupLayout.PREFERRED_SIZE, 93, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 510, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(11, 11, 11)
                 .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1022,28 +1096,6 @@ public class SmartGardenApp extends javax.swing.JFrame {
         logger.log(ventilationSensor.decreaseFlow());
     }//GEN-LAST:event_btnDecreaseVentialtionActionPerformed
 
-    private void btnHeatingStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHeatingStartActionPerformed
-        logger.log(heatingSensor.start());
-    }//GEN-LAST:event_btnHeatingStartActionPerformed
-
-    private void btnHeatingStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHeatingStopActionPerformed
-        logger.log(heatingSensor.stop());
-    }//GEN-LAST:event_btnHeatingStopActionPerformed
-
-    private void btnIncreaseHeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncreaseHeatingActionPerformed
-        logger.log(heatingSensor.increaseTemp());
-    }//GEN-LAST:event_btnIncreaseHeatingActionPerformed
-
-    private void btnDecreaseHeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecreaseHeatingActionPerformed
-        logger.log(heatingSensor.decreaseTemp());
-    }//GEN-LAST:event_btnDecreaseHeatingActionPerformed
-
-    private void btnReadCurrentTempActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadCurrentTempActionPerformed
-        String temp = heatingSensor.getCurrentTemp();
-        logger.log("Current temp: " + temp);
-        lblCurrentTemperature.setText(temp);
-    }//GEN-LAST:event_btnReadCurrentTempActionPerformed
-
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton5ActionPerformed
@@ -1087,6 +1139,28 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private void btnReadNutritionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadNutritionActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnReadNutritionActionPerformed
+
+    private void btnReadCurrentTempActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnReadCurrentTempActionPerformed
+        String temp = heatingSensor.getCurrentTemp();
+        logger.log("Current temp: " + temp);
+        lblCurrentTemperature.setText(temp);
+    }//GEN-LAST:event_btnReadCurrentTempActionPerformed
+
+    private void btnDecreaseHeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDecreaseHeatingActionPerformed
+        logger.log(heatingSensor.decreaseTemp());
+    }//GEN-LAST:event_btnDecreaseHeatingActionPerformed
+
+    private void btnIncreaseHeatingActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnIncreaseHeatingActionPerformed
+        logger.log(heatingSensor.increaseTemp());
+    }//GEN-LAST:event_btnIncreaseHeatingActionPerformed
+
+    private void btnHeatingStartActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHeatingStartActionPerformed
+        logger.log(heatingSensor.start());
+    }//GEN-LAST:event_btnHeatingStartActionPerformed
+
+    private void btnHeatingStopActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnHeatingStopActionPerformed
+        logger.log(heatingSensor.stop());
+    }//GEN-LAST:event_btnHeatingStopActionPerformed
 
     /**
      * @param args the command line arguments
@@ -1162,7 +1236,6 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel16;
     private javax.swing.JLabel jLabel17;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
@@ -1170,26 +1243,27 @@ public class SmartGardenApp extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JList<String> jList1;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
     private javax.swing.JScrollPane jScrollPane1;
-    private java.awt.Label label1;
-    private java.awt.Label label2;
-    private java.awt.Label label5;
+    private java.awt.Label lblCeilingState;
     private javax.swing.JLabel lblCurrentTemperature;
     private javax.swing.JLabel lblCurrentTemperature1;
     private javax.swing.JLabel lblCurrentTemperature2;
     private javax.swing.JLabel lblCurrentTemperature3;
     private javax.swing.JLabel lblCurrentTemperature4;
     private javax.swing.JLabel lblCurrentWater;
+    private javax.swing.JLabel lblHeatingIcon;
     private java.awt.Label lblHeatingState;
+    private java.awt.Label lblSoilSate;
     private java.awt.Label lblVntilationState;
+    private java.awt.Label lblWaterState;
     private javax.swing.JList<String> listLog;
     private javax.swing.JMenuBar menuBar;
+    private javax.swing.JPanel panelCeilingSensor;
+    private javax.swing.JPanel panelHeatingSensor;
+    private javax.swing.JPanel panelSoilSensor;
+    private javax.swing.JPanel panelVentilationSensor;
+    private javax.swing.JPanel panelWaterSensor;
     private javax.swing.JScrollPane scrollPanelLog;
     // End of variables declaration//GEN-END:variables
 
