@@ -19,11 +19,12 @@ import java.net.URL;
 public class MainFrame extends javax.swing.JFrame {
 
     private static final String SENSOR_API = "/soil";
-    private static final String SENSOR_PORT = "3002";
+    private static final String SENSOR_PORT = "3003";
     private static final String SENSOR_ADDRESS = "127.0.01";
     private static final String SOIL_SET_LIGHT = "/set-new-light/";
     private static final String SOIL_SET_HUMIDITY = "/set-new-humidity/";
     private static final String SOIL_SET_TEMPERATURE = "/set-new-temperature/";
+    private static final String SOIL_SET_NUTRITION = "/set-new-nutrition/";
 
     private String makeRequest(String endpoint, String value) {
         String output = "";
@@ -118,10 +119,25 @@ public class MainFrame extends javax.swing.JFrame {
         });
 
         btnUpdateTemeprature.setText("Update");
+        btnUpdateTemeprature.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateTemepratureActionPerformed(evt);
+            }
+        });
 
         btnUpdateNutrition.setText("Update");
+        btnUpdateNutrition.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateNutritionActionPerformed(evt);
+            }
+        });
 
         btnUpdateLight.setText("Update");
+        btnUpdateLight.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnUpdateLightActionPerformed(evt);
+            }
+        });
 
         txtTempLevel.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
@@ -129,7 +145,7 @@ public class MainFrame extends javax.swing.JFrame {
 
         txtNutritionLevel.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
 
-        comboLightLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dark", "Dim", "Bright", "Very Bright" }));
+        comboLightLevel.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dark", "Dim", "Bright" }));
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -189,6 +205,18 @@ public class MainFrame extends javax.swing.JFrame {
     private void btnUpdateHumidityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateHumidityActionPerformed
         makeRequest(SOIL_SET_HUMIDITY, txtHumidityLevel.getText());
     }//GEN-LAST:event_btnUpdateHumidityActionPerformed
+
+    private void btnUpdateTemepratureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateTemepratureActionPerformed
+        makeRequest(SOIL_SET_TEMPERATURE, txtTempLevel.getText())
+    }//GEN-LAST:event_btnUpdateTemepratureActionPerformed
+
+    private void btnUpdateNutritionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateNutritionActionPerformed
+        makeRequest(SOIL_SET_NUTRITION, txtNutritionLevel.getText());
+    }//GEN-LAST:event_btnUpdateNutritionActionPerformed
+
+    private void btnUpdateLightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateLightActionPerformed
+        makeRequest(SOIL_SET_LIGHT, comboLightLevel.getSelectedItem().toString());
+    }//GEN-LAST:event_btnUpdateLightActionPerformed
 
     /**
      * @param args the command line arguments
