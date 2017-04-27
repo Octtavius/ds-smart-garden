@@ -1,1 +1,6 @@
 *.netbeans_automatic_build
+/FakeSensorControlApp/FakeSensorControlApp/nbproject/private/
+/FakeSensorControlApp/FakeSensorControlApp/dist/
+/FakeSensorControlApp/FakeSensorControlApp/build/
+/FakeSensorControlApp/FakeSensorControlApp/target/
+/FakeSensorControlApp/target/
