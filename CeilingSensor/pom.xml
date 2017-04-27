@@ -60,7 +60,7 @@
 <httpConnector>
 <!-- make jetty listen on 127.0.0.1 for
 better security -->
-<host>127.0.0.1</host>
+<host>0.0.0.0</host>
 <port>3001</port>
 </httpConnector>
 <scanIntervalSeconds>3</scanIntervalSeconds>
