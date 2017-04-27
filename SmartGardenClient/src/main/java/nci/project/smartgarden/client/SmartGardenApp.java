@@ -23,6 +23,8 @@ import javax.jmdns.ServiceListener;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JList;
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
 
 //mQTT
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -132,9 +134,9 @@ public class SmartGardenApp extends javax.swing.JFrame {
                 toggleHeatingSensorPanel();
                 break;
             case "ceiling":
-                ceilingSensor = null;
-                logger.log("Ceiling Service removed");
-                toggleCeilingSensorPanel();
+//                ceilingSensor = null;
+//                logger.log("Ceiling Service removed");
+//                toggleCeilingSensorPanel();
                 break;
         }
     }
@@ -1005,6 +1007,57 @@ public class SmartGardenApp extends javax.swing.JFrame {
         
         logger.log("Discovering sensors...");
         
+        class SampleSubscriber implements MqttCallback {
+
+            public SampleSubscriber() {
+            }
+
+            @Override
+            public void connectionLost(Throwable thrwbl) {
+            }
+
+            @Override
+            public void messageArrived(String string, MqttMessage mm) throws Exception {
+                System.out.println(mm + " arrived from topic " + string);
+                if(string.toLowerCase().contains("soil")){
+                    System.out.println("message came from soil sensor");
+                    if(string.toLowerCase().contains("humidity")){
+//                        System.out.println("humidity update");
+                        lblCurrentTemperature1.setText(mm+"");
+                    }
+                    else if(string.toLowerCase().contains("temperature")){
+                        lblCurrentTemperature2.setText(mm+"");
+//                        System.out.println("temperature update");
+                    }
+                    else if(string.toLowerCase().contains("light")){
+                        lblCurrentTemperature3.setText(mm+"");
+//                        System.out.println("light update");
+                    }
+                    else if(string.toLowerCase().contains("nutrition")){
+                        lblCurrentTemperature4.setText(mm+"");
+//                        System.out.println("nutrition update");
+                    }
+                }
+                else if(string.toLowerCase().contains("ceiling")){
+                    System.out.println("message came from ceiling sensor");
+                    lblCeilingState.setText(mm + "");
+                }
+                else if(string.toLowerCase().contains("heating")){
+                    System.out.println("message came from heating sensor");
+                    lblCurrentTemperature.setText(mm + "");
+                }
+                else if(string.toLowerCase().contains("water")){
+                    System.out.println("message came from water sensor");
+                    lblCurrentWater.setText(mm + "");
+                }
+            }
+
+            @Override
+            public void deliveryComplete(IMqttDeliveryToken imdt) {
+            }
+
+        }
+        
         try {
             // Create a JmDNS instance
             JmDNS jmdns = JmDNS.create(InetAddress.getLocalHost());
@@ -1021,6 +1074,35 @@ public class SmartGardenApp extends javax.swing.JFrame {
             
             // Wait a bit
             Thread.sleep(2500);
+            
+            String broker = "tcp://iot.eclipse.org:1883";
+            String clientId = "Subscriber";
+            MemoryPersistence persistence = new MemoryPersistence();
+
+            try {
+                MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
+                MqttConnectOptions connOpts = new MqttConnectOptions();
+                connOpts.setCleanSession(true);
+                sampleClient.setCallback(new SampleSubscriber());
+                System.out.println("Connecting to broker: " + broker);
+                sampleClient.connect(connOpts);
+                System.out.println("Connected");
+                
+                
+                sampleClient.subscribe("/sensor/ceiling/#");
+                sampleClient.subscribe("/sensor/soil/#");
+                sampleClient.subscribe("/sensor/heating/#");
+                sampleClient.subscribe("/sensor/water/#");
+                
+                
+            } catch (MqttException me) {
+                System.out.println("reason " + me.getReasonCode());
+                System.out.println("msg " + me.getMessage());
+                System.out.println("loc " + me.getLocalizedMessage());
+                System.out.println("cause " + me.getCause());
+                System.out.println("excep " + me);
+                me.printStackTrace();
+            }
 
         } catch (UnknownHostException e) {
                 System.out.println(e.getMessage());
