@@ -207,7 +207,7 @@ public class MainFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_btnUpdateHumidityActionPerformed
 
     private void btnUpdateTemepratureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateTemepratureActionPerformed
-        makeRequest(SOIL_SET_TEMPERATURE, txtTempLevel.getText())
+        makeRequest(SOIL_SET_TEMPERATURE, txtTempLevel.getText());
     }//GEN-LAST:event_btnUpdateTemepratureActionPerformed
 
     private void btnUpdateNutritionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateNutritionActionPerformed
