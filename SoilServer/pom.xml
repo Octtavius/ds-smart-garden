@@ -23,9 +23,32 @@
     
     <dependencies>
         <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>2.17</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.3.8</version>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.paho</groupId>
             <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
             <version>1.1.0</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.4</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>2.0</version>
             <type>jar</type>
         </dependency>
         <dependency>
@@ -51,24 +74,24 @@
     <build>
         <plugins>
             <plugin>
-<groupId>org.eclipse.jetty</groupId>
-<artifactId>jetty-maven-plugin</artifactId>
-<version>9.2.4.v20141103</version>
-<configuration>
-<httpConnector>
-<!-- make jetty listen on 127.0.0.1 for
-better security -->
-<host>0.0.0.0</host>
-<port>3003</port>
-</httpConnector>
-<scanIntervalSeconds>3</scanIntervalSeconds>
-<webAppConfig>
-<!--
-defaultsDescriptor>src/test/resources/jetty-maven-plugin-
-webdefault.xml</defaultsDescriptor -->
-</webAppConfig>
-</configuration>
-</plugin>
+                <groupId>org.eclipse.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
+                <version>9.2.4.v20141103</version>
+                <configuration>
+                    <httpConnector>
+                        <!-- make jetty listen on 127.0.0.1 for
+                        better security -->
+                        <host>0.0.0.0</host>
+                        <port>3003</port>
+                    </httpConnector>
+                    <scanIntervalSeconds>3</scanIntervalSeconds>
+                    <webAppConfig>
+                        <!--
+                        defaultsDescriptor>src/test/resources/jetty-maven-plugin-
+                        webdefault.xml</defaultsDescriptor -->
+                    </webAppConfig>
+                </configuration>
+            </plugin>
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

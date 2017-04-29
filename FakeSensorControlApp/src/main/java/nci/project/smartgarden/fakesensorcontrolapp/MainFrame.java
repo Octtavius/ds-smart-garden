@@ -8,9 +8,14 @@ package nci.project.smartgarden.fakesensorcontrolapp;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 /**
  *
@@ -20,13 +25,13 @@ public class MainFrame extends javax.swing.JFrame {
 
     private static final String SENSOR_API = "/soil";
     private static final String SENSOR_PORT = "3003";
-    private static final String SENSOR_ADDRESS = "127.0.01";
+    private static final String SENSOR_ADDRESS = "127.0.0.1";
     private static final String SOIL_SET_LIGHT = "/set-new-light/";
-    private static final String SOIL_SET_HUMIDITY = "/set-new-humidity/";
+    private static final String SOIL_SET_HUMIDITY = "/action";
     private static final String SOIL_SET_TEMPERATURE = "/set-new-temperature/";
     private static final String SOIL_SET_NUTRITION = "/set-new-nutrition/";
 
-    private String makeRequest(String endpoint, String value) {
+    private String makeRequest(String endpoint, String value) throws JSONException {
         String output = "";
         try {
 
@@ -44,20 +49,31 @@ public class MainFrame extends javax.swing.JFrame {
                 
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 		conn.setRequestMethod("GET");
-		conn.setRequestProperty("Accept", "application/json");
+		conn.setRequestProperty("Content-Type", "application/json; charset=UTF-8");
 
 		if (conn.getResponseCode() != 200) {
 			throw new RuntimeException("Failed : HTTP error code : "
 					+ conn.getResponseCode());
 		}
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(
-			(conn.getInputStream())));
+                JSONObject cred = new JSONObject();
+//                JSONObject auth=new JSONObject();
+//                JSONObject parent=new JSONObject();
+                cred.put("username","adm");
+                cred.put("password", "pwd");
+//                auth.put("tenantName", "adm");
+//                auth.put("passwordCredentials", cred);
+//                parent.put("auth", auth);
 
-		System.out.println("Output from Server.... \n");
-		while ((output = br.readLine()) != null) {
-			System.out.println(output);
-		}
+                OutputStreamWriter wr= new OutputStreamWriter(conn.getOutputStream());
+                wr.write(cred.toString());
+//		BufferedReader br = new BufferedReader(new InputStreamReader(
+//			(conn.getInputStream())));
+
+//		System.out.println("Output from Server.... \n");
+//		while ((output = br.readLine()) != null) {
+//			System.out.println(output);
+//		}
 
 		conn.disconnect();
 
@@ -203,19 +219,35 @@ public class MainFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnUpdateHumidityActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateHumidityActionPerformed
-        makeRequest(SOIL_SET_HUMIDITY, txtHumidityLevel.getText());
+        try {
+            makeRequest(SOIL_SET_HUMIDITY, txtHumidityLevel.getText());
+        } catch (JSONException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnUpdateHumidityActionPerformed
 
     private void btnUpdateTemepratureActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateTemepratureActionPerformed
-        makeRequest(SOIL_SET_TEMPERATURE, txtTempLevel.getText());
+        try {
+            makeRequest(SOIL_SET_TEMPERATURE, txtTempLevel.getText());
+        } catch (JSONException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnUpdateTemepratureActionPerformed
 
     private void btnUpdateNutritionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateNutritionActionPerformed
-        makeRequest(SOIL_SET_NUTRITION, txtNutritionLevel.getText());
+        try {
+            makeRequest(SOIL_SET_NUTRITION, txtNutritionLevel.getText());
+        } catch (JSONException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnUpdateNutritionActionPerformed
 
     private void btnUpdateLightActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnUpdateLightActionPerformed
-        makeRequest(SOIL_SET_LIGHT, comboLightLevel.getSelectedItem().toString());
+        try {
+            makeRequest(SOIL_SET_LIGHT, comboLightLevel.getSelectedItem().toString());
+        } catch (JSONException ex) {
+            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_btnUpdateLightActionPerformed
 
     /**

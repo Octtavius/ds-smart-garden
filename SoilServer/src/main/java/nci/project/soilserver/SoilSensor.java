@@ -9,9 +9,16 @@ package nci.project.soilserver;
  *
  * @author I323506
  */
+import com.google.gson.JsonObject;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;	
+import static javax.ws.rs.HttpMethod.POST;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;	
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -27,12 +34,69 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 @Path("/soil")
 public class SoilSensor{
     
+    public static class JsonResponse{
+        private String username;
+        
+        public JsonResponse() {
+            
+        }
+        
+        public JsonResponse(String u) {
+            this.username = u;
+        }
+        
+        public void setU(String u) {
+            this.username = u;
+        }
+        
+        public String getU() {
+            return username;
+        }
+        
+    @Override
+    public String toString() {
+        return new StringBuffer(" First Name : ").append(this.username).toString();
+    }
+
+        
+        
+    }
+    
     private String topic = null;
     private String output = null;
     private String content = null;
     private final String broker = "tcp://iot.eclipse.org:1883";
 //    private
     private final int qos = 2;
+    
+    @POST
+    @Path("/action")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Consumes(MediaType.APPLICATION_JSON)
+    public void doAction(JsonResponse jObj) {
+        //create  acustomer object. REMEMBER: the id is not set yet.
+        //it will be generated in the right class. not here. 
+        
+//        String action = formParams.getFirst("username");
+//        String value = formParams.getFirst("password");       
+        System.out.println(jObj.getU());
+//        JsonObject jObj = new JsonObject(); 
+        
+        
+//        Customer tempCustomer = createCustomerObject(formParams);
+//        
+//        int result = -1;
+//        result = rep.createAccount(tempCustomer, accountType, password);
+//        if(result != -1){
+//            jObj.addProperty("response", result);            
+//            return Response.status(200).entity(jObj.toString()).build();
+//            
+//        }
+//        else {
+//            return Response.status(400).build(); 
+//        }
+
+    }
     
     @GET	
     @Path("/set-new-humidity/{param}")
