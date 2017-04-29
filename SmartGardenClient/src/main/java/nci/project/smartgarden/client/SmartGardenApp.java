@@ -1017,18 +1017,18 @@ public class SmartGardenApp extends javax.swing.JFrame {
                     System.out.println("message came from soil sensor");
                     if(string.toLowerCase().contains("humidity")){
 //                        System.out.println("humidity update");
-                        lblCurrentTemperature1.setText(mm+"");
+                        lblHumidity.setText(mm+"");
                     }
                     else if(string.toLowerCase().contains("temperature")){
-                        lblCurrentTemperature2.setText(mm+"");
+                        lblTemperature.setText(mm+"");
 //                        System.out.println("temperature update");
                     }
                     else if(string.toLowerCase().contains("light")){
-                        lblCurrentTemperature3.setText(mm+"");
+                        lblLight.setText(mm+"");
 //                        System.out.println("light update");
                     }
                     else if(string.toLowerCase().contains("nutrition")){
-                        lblCurrentTemperature4.setText(mm+"");
+                        lblNutrition.setText(mm+"");
 //                        System.out.println("nutrition update");
                     }
                 }
